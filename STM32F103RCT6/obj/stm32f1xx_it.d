@@ -54,3 +54,4 @@
 .\obj\stm32f1xx_it.o: ..\CommonSRC\Inc\usart.h
 .\obj\stm32f1xx_it.o: .\Inc\gpio.h
 .\obj\stm32f1xx_it.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+.\obj\stm32f1xx_it.o: .\Inc\adc.h

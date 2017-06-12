@@ -2,7 +2,11 @@
 /* Includes ------------------------------------------------------------------*/
 #include "usart.h"
 #include "flash.h"
-
+#ifndef BOOTLOADER
+	#include "cmsis_os.h"
+	extern SemaphoreHandle_t bUARTSemaphore;
+	extern TimerHandle_t UARTTimer;
+#endif
 uint8_t TxOK[] = "OK";
 uint8_t TxERROR[] = "ERROR";
 /* USER CODE BEGIN 0 */
@@ -12,6 +16,9 @@ __IO ITStatus UartReady = RESET;
  uint8_t aRxBuffer[RXBUFFERSIZE] = {0};
  uint8_t RxBuffer[1] = {0};
  uint8_t aTxBuffer[TXBUFFERSIZE] = {0};
+ #if defined(BOOTLOADER)
+  uint8_t aTxFlashBuffer[TXBUFFERFLASHSIZE] = {0};
+ #endif
  uint16_t numberRx = 0;
  uint16_t counterRx = 0;
  uint32_t timerCounter = 0;
@@ -21,7 +28,7 @@ UART_HandleTypeDef huart;
 DMA_HandleTypeDef hdma_rx;
 DMA_HandleTypeDef hdma_tx;
 
-void MX_USART1_UART_Init(void)
+void MX_USART_UART_Init(void)
 {
   huart.Instance = USARTx;
   huart.Init.BaudRate = USARTx_BAUDRATE;
@@ -64,19 +71,20 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
   HAL_GPIO_Init(USARTx_TX_GPIO_PORT, &GPIO_InitStruct);
 
   /* UART RX GPIO pin configuration  */
-  GPIO_InitStruct.Pin = USARTx_RX_PIN;
+  GPIO_InitStruct.Pin 			= USARTx_RX_PIN;
   GPIO_InitStruct.Mode      = GPIO_MODE_INPUT;
 	GPIO_InitStruct.Pull      = GPIO_NOPULL;
 
   HAL_GPIO_Init(USARTx_RX_GPIO_PORT, &GPIO_InitStruct);
 	
 	/* UART RTS GPIO pin config */
-	GPIO_InitStruct.Pin = USARTx_RTS_PIN;
+	GPIO_InitStruct.Pin 	= USARTx_RTS_PIN;
   GPIO_InitStruct.Mode  = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull  = GPIO_PULLUP;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
 
-  HAL_GPIO_Init(USARTx_RTS_GPIO_PORT, &GPIO_InitStruct);		
+  HAL_GPIO_Init(USARTx_RTS_GPIO_PORT, &GPIO_InitStruct);	
+	
   /*##-3- Configure the NVIC for UART ########################################*/
   /* NVIC for USART */
   HAL_NVIC_SetPriority(USARTx_IRQn, 0, 1);
@@ -139,8 +147,9 @@ void rts_toggle()
 uint8_t check_request()
 {
 	uint8_t ret = BTL_CMD_NO_CMD;
-	uint8_t crc = 0x00;
-	for (uint16_t i = 0; i < numberRx - 1; i++)
+	//uint8_t crc = 0x00;
+	uint8_t crc = START_BYTE;
+	for (uint16_t i = 1; i < numberRx - 1; i++)//не проверяем 1 стартбайт
 	{
 		if (i < CMD_NUMB_START_BYTES)
 		{ 
@@ -150,8 +159,10 @@ uint8_t check_request()
 		{
 			if (aRxBuffer[i] != RS485_ADDR) return ret;
 		}
-		crc = crc + aRxBuffer[i];
+		//crc = crc + aRxBuffer[i];
+		crc ^= aRxBuffer[i];
 	}
+	//crc = crc + START_BYTE; //добавляем 1 стартбайт
 	if (crc != aRxBuffer[numberRx - 1]) return ret;
 	
 	return aRxBuffer[CMD_NUMB_START_BYTES + 1]; //FlagByte
@@ -179,28 +190,68 @@ void clean_RxBuffer()
 		aRxBuffer[i] = 0x00;
 	}
 }
+void clean_counterRx()
+{
+	counterRx = 0;
+}
 void done_request()
 {
 }
-void make_response()
+void make_response(uint16_t data1, uint16_t data2, uint8_t data3, uint8_t data4, uint8_t flag)
 {	
 	uint8_t crc = 0x00;
 	
 	aTxBuffer[0] = START_BYTE;
 	aTxBuffer[1] = RS485_ADDR;
+	aTxBuffer[2] = flag;
+#ifdef BOOTLOADER	
 	aTxBuffer[2] = aRxBuffer[CMD_NUMB_START_BYTES + 1]; //FlagByte
 	aTxBuffer[3] = 0;
 	aTxBuffer[4] = 0;
 	aTxBuffer[5] = 0;
 	aTxBuffer[6] = 0;
+#endif
+#ifndef BOOTLOADER
+	aTxBuffer[3] = data1 >> 8;
+	aTxBuffer[4] = data1;
+	aTxBuffer[5] = data2 >> 8;
+	aTxBuffer[6] = data2;
+	aTxBuffer[7] = data3;
+	aTxBuffer[8] = data4;
+#endif
 	
 	for (uint16_t i = 0; i < TXBUFFERSIZE - 1; i++)
 	{
-		crc = crc + aRxBuffer[i];
+		//crc = crc + aTxBuffer[i];
+		crc ^= aTxBuffer[i]; 
 	}
 	
 	aTxBuffer[TXBUFFERSIZE - 1] = crc;
 }
+
+#if defined(BOOTLOADER)
+void send_flash_data(uint32_t* data, uint8_t words)
+{
+
+	for (uint16_t i = 0; i < (words * 4); i = i + 4)
+	{
+		aTxFlashBuffer[i] 	= 0;
+		aTxFlashBuffer[i+1] = 0;
+		aTxFlashBuffer[i+2] = 0;
+		aTxFlashBuffer[i+3] = 0;
+	}
+	for (uint16_t i = 0; i < (words * 4); i = i + 4)
+	{		
+		aTxFlashBuffer[i] 	|= data[i/4];
+		aTxFlashBuffer[i+1] |= data[i/4] >> 8;
+		aTxFlashBuffer[i+2] |= data[i/4] >> 16;
+		aTxFlashBuffer[i+3] |= data[i/4] >> 24;
+	}
+	rts_toggle();
+	HAL_UART_Transmit_DMA(&huart, (uint8_t *)aTxFlashBuffer, words * 4);
+	HAL_Delay(AFTERSEND_DELAY);
+}
+#endif
 
 void send_response()
 {
@@ -220,7 +271,7 @@ void receive(uint16_t count, uint8_t timeout_sec)
 	numberRx = count;
 	//HAL_UART_Receive_DMA(&huart, (uint8_t *)aRxBuffer, numberRx);
 	/**/
-	counterRx = 0;
+	clean_counterRx();
 	reseive_dma_1();
 }
 
@@ -250,6 +301,7 @@ void check_timer()
 		}
 	}
 }
+
 
 void check_timer2()
 {
@@ -285,54 +337,44 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-	//UartReady = SET;
-	/**/
+#ifndef BOOTLOADER
+	static portBASE_TYPE xHigherPriorityTaskWoken;
+	xHigherPriorityTaskWoken = pdFALSE;
+#endif
+	
 	aRxBuffer[counterRx] = RxBuffer[0];
 	if (counterRx == 0)
 	{
+		
+#ifdef BOOTLOADER 
 		update_timer();//For FreeRTOS comment this line
 										// and launch Task
+#else
+		xTimerResetFromISR(UARTTimer, &xHigherPriorityTaskWoken);
+#endif
+		
 	}
+	
 	counterRx++;
-	if (counterRx == numberRx) UartReady = SET;//For FreeRTOS comment if!
+	if (counterRx == numberRx) 
+	{
+		UartReady = SET;
+#ifndef BOOTLOADER
+		clean_counterRx();
+#endif
+	}
 	reseive_dma_1();
+#ifndef BOOTLOADER
+
+	if (xHigherPriorityTaskWoken == pdTRUE)
+	{
+		xHigherPriorityTaskWoken = pdFALSE;
+		taskYIELD();
+	}
+#endif
 }
 
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 {
 }
 
-/*
-void HAL_UART_MspDeInit(UART_HandleTypeDef *huart)
-{
-
-  static DMA_HandleTypeDef hdma_tx;
-  static DMA_HandleTypeDef hdma_rx;
-
-  USARTx_FORCE_RESET();
-  USARTx_RELEASE_RESET();
-
-  HAL_GPIO_DeInit(USARTx_TX_GPIO_PORT, USARTx_TX_PIN);
-
-  HAL_GPIO_DeInit(USARTx_RX_GPIO_PORT, USARTx_RX_PIN);
-  
-  HAL_DMA_DeInit(&hdma_tx);
-  HAL_DMA_DeInit(&hdma_rx);
-
-  HAL_NVIC_DisableIRQ(USARTx_DMA_TX_IRQn);
-  HAL_NVIC_DisableIRQ(USARTx_DMA_RX_IRQn);
-} 
-*/
-/* USER CODE BEGIN 1 */
-
-/* USER CODE END 1 */
-
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

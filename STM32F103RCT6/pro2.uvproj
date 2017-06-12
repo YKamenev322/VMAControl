@@ -311,7 +311,7 @@
               </OCR_RVCT3>
               <OCR_RVCT4>
                 <Type>1</Type>
-                <StartAddress>0x8000000</StartAddress>
+                <StartAddress>0x8006400</StartAddress>
                 <Size>0x40000</Size>
               </OCR_RVCT4>
               <OCR_RVCT5>
@@ -422,6 +422,11 @@
               <FileName>startup_stm32f103xe.s</FileName>
               <FileType>2</FileType>
               <FilePath>.\startup_stm32f103xe.s</FilePath>
+            </File>
+            <File>
+              <FileName>main.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Inc\main.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -872,6 +877,21 @@
               <FileName>adc.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Src\adc.c</FilePath>
+            </File>
+            <File>
+              <FileName>filter_sred.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Src\filter_sred.c</FilePath>
+            </File>
+            <File>
+              <FileName>vma.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Src\vma.c</FilePath>
+            </File>
+            <File>
+              <FileName>dac.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Src\dac.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -16,8 +16,15 @@
 /* USER CODE BEGIN Private defines */
 #define VDD_APPLI                      ((uint32_t) 3300)   /* Value of analog voltage supply Vdda (unit: mV) */
 #define RANGE_12BITS                   ((uint32_t) 4095)   /* Max value with a full range of 12 bits */
+#define MAX_ADC4_VALUE							    /*RANGE_12BITS * 1*/3430		/*Для защиты драйвера ВМА по току*/	//10А - 1/3 диапазона:  
+#define MAX_ADC3_VALUE							    RANGE_12BITS * 1//3300		/*Для защиты драйвера ADD по току*/	
+																													//диапазон: 3100(нуль ACS712) + (0..1000)
+#define ADD_MAX_CURRENT									4000//mA
+#define VMA_MAX_CURRENT									24000//mA
+#define ADD_MAX_CURRENT_VALUE						3000//mA для отсечки add
+#define VMA_MAX_CURRENT_VALUE						10000//mA для отсечки vma
 
-#define ADCCONVERTEDVALUES_BUFFER_SIZE ((uint32_t)    3)   /* Size of array containing ADC converted values: set to ADC sequencer number of ranks converted, to have a rank in each address */
+#define ADCCONVERTEDVALUES_BUFFER_SIZE ((uint32_t)    5)   /* Size of array containing ADC converted values: set to ADC sequencer number of ranks converted, to have a rank in each address */
 
 /* Internal temperature sensor: constants data used for indicative values in  */
 /* this example. Refer to device datasheet for min/typ/max values.            */
@@ -72,32 +79,80 @@
 #define ADCx_FORCE_RESET()              __HAL_RCC_ADC1_FORCE_RESET()
 #define ADCx_RELEASE_RESET()            __HAL_RCC_ADC1_RELEASE_RESET()
 
-/* Definition of ADCx channels */
-#define ADCx_CHANNELa                   ADC_CHANNEL_12
+#if !defined(SEMENUK_DRIVER)
+	/* Definition of ADCxA channel (ADC1 potenciometer)*/
+	#define ADCx_CHANNELa                   ADC_CHANNEL_10
+	#define ADCx_CHANNELa_GPIO_CLK_ENABLE() __HAL_RCC_GPIOC_CLK_ENABLE()
+	#define ADCx_CHANNELa_GPIO_PORT         GPIOC
+	#define ADCx_CHANNELa_PIN               GPIO_PIN_0
+	#define ADC1_NumOfChannel								0
 
-/* Definition of ADCx channels pins */
-#define ADCx_CHANNELa_GPIO_CLK_ENABLE() __HAL_RCC_GPIOC_CLK_ENABLE()
-#define ADCx_CHANNELa_GPIO_PORT         GPIOC
-#define ADCx_CHANNELa_PIN               GPIO_PIN_2
+	/* Definition of ADCxB channel (ADC2 potenciometer) */
+	#define ADCx_CHANNELb                   ADC_CHANNEL_11
+	#define ADCx_CHANNELb_GPIO_CLK_ENABLE() __HAL_RCC_GPIOC_CLK_ENABLE()
+	#define ADCx_CHANNELb_GPIO_PORT         GPIOC
+	#define ADCx_CHANNELb_PIN               GPIO_PIN_1
+	#define ADC2_NumOfChannel								1
 
-/* Definition of ADCx channels */
-#define ADCx_CHANNELb                   ADC_CHANNEL_13
+	/* Definition of ADCxC channel (ADC3 add-driver current) */
+	#define ADCx_CHANNELc                   ADC_CHANNEL_12
+	#define ADCx_CHANNELc_GPIO_CLK_ENABLE() __HAL_RCC_GPIOC_CLK_ENABLE()
+	#define ADCx_CHANNELc_GPIO_PORT         GPIOC
+	#define ADCx_CHANNELc_PIN               GPIO_PIN_2
+	#define ADC3_NumOfChannel								2
 
-/* Definition of ADCx channels pins */
-#define ADCx_CHANNELb_GPIO_CLK_ENABLE() __HAL_RCC_GPIOC_CLK_ENABLE()
-#define ADCx_CHANNELb_GPIO_PORT         GPIOC
-#define ADCx_CHANNELb_PIN               GPIO_PIN_3
+	/* Definition of ADCxD channel (ADC4 vma-driver current)*/
+	#define ADCx_CHANNELd                   ADC_CHANNEL_13
+	#define ADCx_CHANNELd_GPIO_CLK_ENABLE() __HAL_RCC_GPIOC_CLK_ENABLE()
+	#define ADCx_CHANNELd_GPIO_PORT         GPIOC
+	#define ADCx_CHANNELd_PIN               GPIO_PIN_3
+	#define ADC4_NumOfChannel								3
+
+#else
+	//Все каналы посадил на PA0 - ADC12_IN0
+	/* Definition of ADCxA channel (ADC1 potenciometer)*/
+	#define ADCx_CHANNELa                   ADC_CHANNEL_0
+	#define ADCx_CHANNELa_GPIO_CLK_ENABLE() __HAL_RCC_GPIOC_CLK_ENABLE()
+	#define ADCx_CHANNELa_GPIO_PORT         GPIOA
+	#define ADCx_CHANNELa_PIN               GPIO_PIN_0
+	#define ADC1_NumOfChannel								0
+
+	/* Definition of ADCxB channel (ADC2 potenciometer) */
+	#define ADCx_CHANNELb                   ADC_CHANNEL_0
+	#define ADCx_CHANNELb_GPIO_CLK_ENABLE() __HAL_RCC_GPIOC_CLK_ENABLE()
+	#define ADCx_CHANNELb_GPIO_PORT         GPIOA
+	#define ADCx_CHANNELb_PIN               GPIO_PIN_0
+	#define ADC2_NumOfChannel								1
+
+	/* Definition of ADCxC channel (ADC3 add-driver current) */
+	#define ADCx_CHANNELc                   ADC_CHANNEL_0
+	#define ADCx_CHANNELc_GPIO_CLK_ENABLE() __HAL_RCC_GPIOC_CLK_ENABLE()
+	#define ADCx_CHANNELc_GPIO_PORT         GPIOA
+	#define ADCx_CHANNELc_PIN               GPIO_PIN_0
+	#define ADC3_NumOfChannel								2
+
+	/* Definition of ADCxD channel (ADC4 vma-driver current)*/
+	#define ADCx_CHANNELd                   ADC_CHANNEL_0
+	#define ADCx_CHANNELd_GPIO_CLK_ENABLE() __HAL_RCC_GPIOC_CLK_ENABLE()
+	#define ADCx_CHANNELd_GPIO_PORT         GPIOA
+	#define ADCx_CHANNELd_PIN               GPIO_PIN_0
+	#define ADC4_NumOfChannel								3
+	
+#endif
+
+/* Definition of Temp channel */
+#define ADCTemp_NumOfChannel						4
 
 /* Definition of ADCx DMA resources */
 #define ADCx_DMA_CLK_ENABLE()           __HAL_RCC_DMA1_CLK_ENABLE()
 #define ADCx_DMA                        DMA1_Channel1
 
 #define ADCx_DMA_IRQn                   DMA1_Channel1_IRQn
-#define ADCx_DMA_IRQHandler             DMAChannel1_IRQHandler
+#define ADCx_DMA_IRQHandler             DMA1_Channel1_IRQHandler
 
 /* Definition of ADCx NVIC resources */
 #define ADCx_IRQn                       ADC1_2_IRQn
-#define ADCx_IRQHandler                 ADC_IRQHandler
+#define ADCx_IRQHandler                 ADC1_2_IRQHandler
 
 /* ## Definition of DAC related resources ################################### */
 /* Definition of DACx clock resources */

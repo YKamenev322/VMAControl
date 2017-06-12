@@ -3,17 +3,9 @@
 #include "stm32f1xx_hal.h"
 
 extern void Error_Handler(void);
-/* USER CODE BEGIN 0 */
 
-/* USER CODE END 0 */
-/**
-  * Initializes the Global MSP.
-  */
 void HAL_MspInit(void)
 {
-  /* USER CODE BEGIN MspInit 0 */
-
-  /* USER CODE END MspInit 0 */
 
   __HAL_RCC_AFIO_CLK_ENABLE();
 
@@ -40,9 +32,6 @@ void HAL_MspInit(void)
   __HAL_AFIO_REMAP_SWJ_ENABLE();
 	//__HAL_AFIO_REMAP_SWJ_NONJTRST();
 	
-  /* USER CODE BEGIN MspInit 1 */
-
-  /* USER CODE END MspInit 1 */
 }
 
 /** System Clock Configuration

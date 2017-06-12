@@ -100,7 +100,7 @@
 #define configTICK_RATE_HZ                       ((TickType_t)1000)
 #define configMAX_PRIORITIES                     ( 7 )
 #define configMINIMAL_STACK_SIZE                 ((uint16_t)128)
-#define configTOTAL_HEAP_SIZE                    ((size_t)3072)
+#define configTOTAL_HEAP_SIZE                    ((size_t)6114)//было 3072
 #define configMAX_TASK_NAME_LEN                  ( 16 )
 #define configUSE_TRACE_FACILITY                 0//Используем ли мы отладочные примочки ОС. 
 #define configUSE_16_BIT_TICKS                   0//Разрядность таймера ОС. 1—16 бит, 0—32 бита
@@ -150,7 +150,7 @@ See http://www.FreeRTOS.org/RTOS-Cortex-M3-M4.html. */
 /* Normal assert() semantics without relying on the provision of an assert.h
 header file. */
 /* USER CODE BEGIN 1 */   
-#define configASSERT( x ) if ((x) == 0) {taskDISABLE_INTERRUPTS(); for( ;; );} 
+//#define configASSERT( x ) if ((x) == 0) {taskDISABLE_INTERRUPTS(); for( ;; );} 
 /* USER CODE END 1 */
 
 /* Definitions that map the FreeRTOS port interrupt handlers to their CMSIS
@@ -164,6 +164,11 @@ standard names. */
 
 /* USER CODE BEGIN Defines */   	      
 /* Section where parameter definitions can be added (for instance, to override default ones in FreeRTOS.h) */
+
+//my defines when configUSE_TIMERS=1
+#define configTIMER_TASK_PRIORITY 		(configMAX_PRIORITIES - 1)
+#define configTIMER_QUEUE_LENGTH 			5
+#define configTIMER_TASK_STACK_DEPTH 	configMINIMAL_STACK_SIZE	
 /* USER CODE END Defines */ 
 
 #endif /* FREERTOS_CONFIG_H */

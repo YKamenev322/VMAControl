@@ -137,12 +137,15 @@
 #define ADDR_FLASH_PAGE_127   ((uint32_t)0x0801FC00) /* Base @ of Page 127, 1 Kbytes */
 #define ADDR_FLASH_PAGE_255   ((uint32_t)0x08034C00) /* Base @ of Page 127, 1 Kbytes */
 
+#define BTL_CMD_REQUEST		    0x00
 #define BTL_CMD_NO_CMD				0xff
 #define BTL_CMD_RESTART				0x80
-#define BTL_CMD_ERASE 				'2'
-#define BTL_CMD_SETDATA_FLASH	'3'
-#define BTL_CMD_FLASH	 				'4'
-#define BTL_CMD_GOTOAPP				'5'
+#define BTL_CMD_ERASE 				0x32
+#define BTL_CMD_SETDATA_FLASH	0x33
+#define BTL_CMD_FLASH	 				0x34
+#define BTL_CMD_GOTOAPP				0x35
+#define BTL_CMD_READDATA			0x36
+#define BTL_CMD_FLASHCRC			0x37
 #define BTL_FLASH_RES_OK			0x00
 #define BTL_FLASH_RES_ERROR		0x01
 
@@ -152,6 +155,8 @@
 #define NVIC_VectTab_FLASH           ((uint32_t)0x08000000)
 #define BKP_VALUE 							0x55 
 #define FLASH32_BUFF_SIZE				256
+#define FLASH_CRC							((uint32_t)0x11223344)
+#define START_TIMER_DELAY			1000
 typedef  void (*pFunction)(void);	
 
 //#include <stdbool.h>
@@ -161,8 +166,11 @@ void goToBootloader();
 void goToResetAndApp();
 void jump_to_app(void);	
 uint8_t Flash_Check();
+void Flash_Read(uint8_t numOfPage, uint8_t numOfWords);
+void Flash_clean_flashbuffer(uint8_t words);
 uint32_t Flash_Erase();
 uint8_t Flash_Flash();
+uint8_t Flash_FlashCRC();
 void bkp_enable();
 
 #ifdef __cplusplus

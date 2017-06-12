@@ -2,6 +2,7 @@
 .\obj\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 .\obj\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
 .\obj\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+.\obj\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 .\obj\main.o: .\Inc\main.h
 .\obj\main.o: ..\CommonSRC\Drivers\STM32F1xx_HAL_Driver\Inc\stm32f1xx_hal.h
 .\obj\main.o: .\Inc\stm32f1xx_hal_conf.h
@@ -55,3 +56,6 @@
 .\obj\main.o: ..\CommonSRC\Inc\usart.h
 .\obj\main.o: .\Inc\gpio.h
 .\obj\main.o: .\Inc\adc.h
+.\obj\main.o: .\Inc\filter_sred.h
+.\obj\main.o: .\Inc\vma.h
+.\obj\main.o: .\Inc\dac.h

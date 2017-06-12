@@ -4,41 +4,87 @@
 pFunction Jump_To_Application;
 uint32_t Address = 0, PAGEError = 0, Error = 0;
 
+//#if defined (BOOTLOADER)
 uint32_t flashBuffer[FLASH32_BUFF_SIZE] = {0x00000000};
+//#endif
+uint8_t firstflag = 0;
+uint32_t starttimer_counter = 0;
 
 extern uint16_t numberRx;
 extern uint8_t aRxBuffer[RXBUFFERSIZE];
+
+uint8_t check_start_timer()
+{
+	if (firstflag == 0 )
+	{
+		firstflag = 1;
+		starttimer_counter = HAL_GetTick();
+	}
+	if (HAL_GetTick() - starttimer_counter > START_TIMER_DELAY) 
+		return 1;
+	else 
+		return 0;
+
+}
 
 void bkp_enable()
 {
 		HAL_PWR_EnableBkUpAccess();
   __HAL_RCC_BKP_CLK_ENABLE();
 }
-uint8_t Flash_Check()
-{
-	    /* Check the correctness of written data */
-	
-		uint32_t Addr = FLASH_USER_START_ADDR + FLASH_USER_START_ADDR_OFFSET;
-		uint32_t Addr_end = Addr + 16;
-		uint8_t result;
-		//проверяем первые 16 байт
-    while (Addr < Addr_end)
-    {
-      if((*(__IO uint32_t*) Addr) != 0xffffffff)
-      {
-        result++;
-      }
-      Addr += 4;
-    }
-	return result;
-}
-
 void goToBootloader()
 {
 		__disable_irq();
 		BKUPWrite(RTC_BKP_DR1, BKP_VALUE);
 		HAL_NVIC_SystemReset();
 }
+
+uint8_t Flash_Check()
+{	
+	/*
+	uint32_t Addr = FLASH_USER_START_ADDR + FLASH_USER_START_ADDR_OFFSET;
+	uint32_t Addr_end = Addr + 16;
+	uint8_t result;
+	//проверяем первые 16 байт
+   while (Addr < Addr_end)
+   {
+     if((*(__IO uint32_t*) Addr) != 0xffffffff)
+     {
+       result++;
+     }
+     Addr += 4;
+   }
+	return result;
+	 */
+	uint32_t Addr = FLASH_USER_START_ADDR + FLASH_USER_START_ADDR_OFFSET - 4;//addr of FlashCRC
+	uint32_t Addr_end = Addr + 4;
+	uint8_t result = 0;
+	//проверяем CRC
+   while (Addr < Addr_end)
+   {
+     if((*(__IO uint32_t*) Addr) == FLASH_CRC)
+     {
+       result++;
+     }
+     Addr += 4;
+   }
+	return result;
+}
+
+void Flash_Read(uint8_t numOfPage, uint8_t numOfWords)
+{
+		uint32_t Addr = ADDR_FLASH_PAGE_0 + numOfPage * 1024;//start addr of page
+		uint32_t Addr_end = Addr + numOfWords * 4;//end addr of read datas
+		uint8_t i = 0;
+		//пишем во flashBuffer слова флеша
+    while (Addr < Addr_end)
+    {
+			flashBuffer[i] = (*(__IO uint32_t*) Addr);
+			i++;
+      Addr += 4;
+    }
+}
+
 void goToResetAndApp()
 {
 		__disable_irq();
@@ -47,7 +93,7 @@ void goToResetAndApp()
 }
 
 void jump_to_app(void)
-	{
+{
 	uint32_t JumpAddress;
 
 	uint32_t startAddress = FLASH_USER_START_ADDR + FLASH_USER_START_ADDR_OFFSET;
@@ -56,17 +102,24 @@ void jump_to_app(void)
 	Jump_To_Application = (pFunction) JumpAddress;
 	__set_MSP(*(__IO uint32_t*) (startAddress));		
 	Jump_To_Application(); 
-	}
+}
 
-	uint32_t Flash_Erase()
+void Flash_clean_flashbuffer(uint8_t words)
+{
+	for (uint8_t i = 0; i < words; i++)
+	{
+		flashBuffer[i] = 0x00000000;
+	}
+}
+uint32_t Flash_Erase()
 {
 	static FLASH_EraseInitTypeDef EraseInitStruct;
 
 		HAL_FLASH_Unlock();
 
 		EraseInitStruct.TypeErase   = FLASH_TYPEERASE_PAGES;
-		EraseInitStruct.PageAddress = FLASH_USER_START_ADDR;
-		EraseInitStruct.NbPages     = (FLASH_USER_END_ADDR - FLASH_USER_START_ADDR) / FLASH_PAGE_SIZE;
+		EraseInitStruct.PageAddress = FLASH_USER_START_ADDR - 1 * FLASH_PAGE_SIZE;//test 
+		EraseInitStruct.NbPages     = (FLASH_USER_END_ADDR - (FLASH_USER_START_ADDR - 1 * FLASH_PAGE_SIZE)) / FLASH_PAGE_SIZE;
 
 		if (HAL_FLASHEx_Erase(&EraseInitStruct, &PAGEError) != HAL_OK)
 		{
@@ -116,6 +169,32 @@ uint8_t Flash_Flash()
 	HAL_FLASH_Lock();
 	
 	if (Address >= Address_end )
+		return BTL_FLASH_RES_OK;
+	else 
+		return BTL_FLASH_RES_ERROR;
+}
+
+uint8_t Flash_FlashCRC()
+{					
+	uint32_t Address_start = FLASH_USER_START_ADDR + FLASH_USER_START_ADDR_OFFSET - 4;//addr of CRC word
+	uint32_t Address_end = Address_start + 4;
+
+	HAL_FLASH_Unlock();	
+	
+	while (Address_start < Address_end )
+	{
+		uint32_t Data = FLASH_CRC;
+		if (HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, Address_start, Data) == HAL_OK)
+		{
+			Address_start = Address_start + 4;
+		}
+		else 
+			break;
+	}
+	
+	HAL_FLASH_Lock();
+	
+	if (Address_start >= Address_end )
 		return BTL_FLASH_RES_OK;
 	else 
 		return BTL_FLASH_RES_ERROR;

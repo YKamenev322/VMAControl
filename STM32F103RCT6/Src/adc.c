@@ -3,6 +3,8 @@
 #include "adc.h"
 /* USER CODE BEGIN 0 */
 ADC_HandleTypeDef hadc1;
+__IO ITStatus AcpReady = RESET;
+
 //DAC_HandleTypeDef DacHandle;
 /* USER CODE END 0 */
 
@@ -21,8 +23,8 @@ void MX_ADC1_Init(void)
   hadc1.Instance = ADCx; 
   hadc1.Init.DataAlign             = ADC_DATAALIGN_RIGHT;
   hadc1.Init.ScanConvMode          = ADC_SCAN_ENABLE;               /* Sequencer disabled (ADC conversion on only 1 channel: channel set on rank 1) */
-  hadc1.Init.ContinuousConvMode    = DISABLE;                       /* Continuous mode disabled to have only 1 rank converted at each conversion trig, and because discontinuous mode is enabled */
-  hadc1.Init.NbrOfConversion       = 3;                             /* Sequencer of regular group will convert the 3 first ranks: rank1, rank2, rank3 */
+  hadc1.Init.ContinuousConvMode    = ENABLE;//DISABLE;                       /* Continuous mode disabled to have only 1 rank converted at each conversion trig, and because discontinuous mode is enabled */
+  hadc1.Init.NbrOfConversion       = ADCCONVERTEDVALUES_BUFFER_SIZE;/* Sequencer of regular group will convert the 3 first ranks: rank1, rank2, rank3 */
   hadc1.Init.DiscontinuousConvMode = ENABLE;                        /* Sequencer of regular group will convert the sequence in several sub-divided sequences */
   hadc1.Init.NbrOfDiscConversion   = 1;                             /* Sequencer of regular group will convert ranks one by one, at each conversion trig */
   hadc1.Init.ExternalTrigConv      = ADC_SOFTWARE_START;            /* Trig of conversion start done manually by software, without external event */
@@ -37,6 +39,8 @@ void MX_ADC1_Init(void)
   /* Note: Set long sampling time due to internal channels (VrefInt,          */
   /*       temperature sensor) constraints. Refer to device datasheet for     */
   /*       min/typ/max values.                                                */
+	
+	//Channel A rank 1
   sConfig.Channel      = ADCx_CHANNELa;
   sConfig.Rank         = ADC_REGULAR_RANK_1;
   sConfig.SamplingTime = ADC_SAMPLETIME_71CYCLES_5;  
@@ -44,22 +48,34 @@ void MX_ADC1_Init(void)
   {
     Error_Handler();
   }
-  /* Configuration of channel on ADCx regular group on sequencer rank 2 */
-  /* Replicate previous rank settings, change only channel and rank */
-  sConfig.Channel      = ADC_CHANNEL_TEMPSENSOR;
+	//Channel B rank 2
+  sConfig.Channel      = ADCx_CHANNELb;
   sConfig.Rank         = ADC_REGULAR_RANK_2;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     Error_Handler();
   }
-	
-  sConfig.Channel      = ADCx_CHANNELb;
+	//Channel B rank 3
+  sConfig.Channel      = ADCx_CHANNELc;
   sConfig.Rank         = ADC_REGULAR_RANK_3;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     Error_Handler();
+  } 
+	//Channel B rank 4
+  sConfig.Channel      = ADCx_CHANNELd;
+  sConfig.Rank         = ADC_REGULAR_RANK_4;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
   }  
-
+	//Temp sensor
+  sConfig.Channel      = ADC_CHANNEL_TEMPSENSOR;
+  sConfig.Rank         = ADC_REGULAR_RANK_5;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
 }
 
 
@@ -74,6 +90,8 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)
   /* Enable clock of GPIO associated to the peripheral channels */
   ADCx_CHANNELa_GPIO_CLK_ENABLE();
   ADCx_CHANNELb_GPIO_CLK_ENABLE();
+  ADCx_CHANNELc_GPIO_CLK_ENABLE();
+  ADCx_CHANNELd_GPIO_CLK_ENABLE();
   
   /* Enable clock of ADCx peripheral */
   ADCx_CLK_ENABLE();
@@ -101,7 +119,17 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)
   GPIO_InitStruct.Pin = ADCx_CHANNELb_PIN;
   GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(ADCx_CHANNELb_GPIO_PORT, &GPIO_InitStruct);  
+  HAL_GPIO_Init(ADCx_CHANNELb_GPIO_PORT, &GPIO_InitStruct);
+	
+  GPIO_InitStruct.Pin = ADCx_CHANNELc_PIN;
+  GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(ADCx_CHANNELc_GPIO_PORT, &GPIO_InitStruct); 
+	
+  GPIO_InitStruct.Pin = ADCx_CHANNELd_PIN;
+  GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(ADCx_CHANNELd_GPIO_PORT, &GPIO_InitStruct);     
   /*##-3- Configure the DMA ##################################################*/
   /* Configure DMA parameters */
   DmaHandle.Instance = ADCx_DMA;
@@ -125,14 +153,14 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)
 
   /* NVIC configuration for DMA interrupt (transfer completion or error) */
   /* Priority: high-priority */
-  HAL_NVIC_SetPriority(ADCx_DMA_IRQn, 3, 0);
+  HAL_NVIC_SetPriority(ADCx_DMA_IRQn, 15, 0);
   HAL_NVIC_EnableIRQ(ADCx_DMA_IRQn);
   
 
   /* NVIC configuration for ADC interrupt */
   /* Priority: high-priority */
-  HAL_NVIC_SetPriority(ADCx_IRQn, 3, 0);
-  HAL_NVIC_EnableIRQ(ADCx_IRQn);
+  //HAL_NVIC_SetPriority(ADCx_IRQn, 3, 0);
+  //HAL_NVIC_EnableIRQ(ADCx_IRQn);
 }
 
 void HAL_ADC_MspDeInit(ADC_HandleTypeDef *hadc)
@@ -145,6 +173,8 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef *hadc)
   /* De-initialize GPIO pin of the selected ADC channel */
   HAL_GPIO_DeInit(ADCx_CHANNELa_GPIO_PORT, ADCx_CHANNELa_PIN);
   HAL_GPIO_DeInit(ADCx_CHANNELb_GPIO_PORT, ADCx_CHANNELb_PIN);
+  HAL_GPIO_DeInit(ADCx_CHANNELc_GPIO_PORT, ADCx_CHANNELc_PIN);
+  HAL_GPIO_DeInit(ADCx_CHANNELd_GPIO_PORT, ADCx_CHANNELd_PIN);
 
   /*##-3- Disable the DMA ####################################################*/
   /* De-Initialize the DMA associated to the peripheral */
@@ -158,6 +188,6 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef *hadc)
   HAL_NVIC_DisableIRQ(ADCx_DMA_IRQn);
   
   /* Disable the NVIC configuration for ADC interrupt */
-  HAL_NVIC_DisableIRQ(ADCx_IRQn);
+  //HAL_NVIC_DisableIRQ(ADCx_IRQn);
 }
 

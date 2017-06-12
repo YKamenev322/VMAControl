@@ -55,3 +55,7 @@
 .\obj\freertos.o: ..\CommonSRC\Inc\usart.h
 .\obj\freertos.o: .\Inc\adc.h
 .\obj\freertos.o: ..\CommonSRC\Inc\flash.h
+.\obj\freertos.o: .\Inc\tim.h
+.\obj\freertos.o: .\Inc\filter_sred.h
+.\obj\freertos.o: .\Inc\vma.h
+.\obj\freertos.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h

@@ -6,6 +6,7 @@
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
+#include "adc.h"
 
 /* USER CODE BEGIN 0 */
 
@@ -14,6 +15,7 @@
 /* External variables --------------------------------------------------------*/
 
 extern TIM_HandleTypeDef htim4;
+//extern TIM_HandleTypeDef htim2;
 
 extern DMA_HandleTypeDef hdma_adc1;
 extern ADC_HandleTypeDef hadc1;
@@ -72,13 +74,26 @@ void SysTick_Handler(void)
 {
   osSystickHandler();
 }
-
+#if !defined(SEMENUK_DRIVER)
+/*
 void EXTI4_IRQHandler(void)
 {
   HAL_GPIO_EXTI_IRQHandler(BRAKE);
 }
+*/
+void BRAKE_IRQHandler(void)//needTest
+{
+  HAL_GPIO_EXTI_IRQHandler(BRAKE);
+}
+#endif
 
+/*
 void EXTI9_5_IRQHandler(void)
+{
+	HAL_GPIO_EXTI_IRQHandler(FAULT);
+}
+*/
+void FAULT_IRQHandler(void)//needTest
 {
 	HAL_GPIO_EXTI_IRQHandler(FAULT);
 }
@@ -91,48 +106,44 @@ void TIM4_IRQHandler(void)
   HAL_TIM_IRQHandler(&htim4);
 }
 
-void TIM2_IRQHandler(void)
-{
-  HAL_TIM_IRQHandler(&htim2);
-}
 
-//void DMAChannel1_IRQHandler(void)
-void DMA1_Channel1_IRQHandler(void)
+/******************* ADC *****************/
+//void DMA1_Channel1_IRQHandler(void)
+void ADCx_DMA_IRQHandler(void)//needTest
 {
   HAL_DMA_IRQHandler(hadc1.DMA_Handle);
 }
 
-//void ADC_IRQHandler(void)
-void ADC1_2_IRQHandler(void)
+//void ADC1_2_IRQHandler(void)
+void ADCx_IRQHandler(void)//needTest
 {
   HAL_ADC_IRQHandler(&hadc1);
 }
+/****************END ADC *****************/
 
-//void USART1_IRQHandler(void)
-void USART2_IRQHandler(void)
+/******************* UART *****************/
+//void USART2_IRQHandler(void)
+void USARTx_IRQHandler(void)//needTest
 {
   HAL_UART_IRQHandler(&huart);
 }
-
-/**
-  *         used for USART data reception
-  */
-
-//void DMAChannel5_IRQHandler(void)
-void DMA1_Channel6_IRQHandler(void)
+//Uart Rx
+//void DMA1_Channel6_IRQHandler(void)
+void USARTx_DMA_RX_IRQHandler(void)//needTest
 {
   HAL_DMA_IRQHandler(huart.hdmarx);
 }
-
-
-/**
-  *         used for USART data transmission
-  */
-	
-//void DMAChannel4_IRQHandler(void)
-void DMA1_Channel7_IRQHandler(void)
+//Uart Tx
+//void DMA1_Channel7_IRQHandler(void)
+void USARTx_DMA_TX_IRQHandler(void)//needTest	
 {
   HAL_DMA_IRQHandler(huart.hdmatx);
+}
+/****************END UART *****************/
+
+void TIM2_IRQHandler(void)
+{
+  HAL_TIM_IRQHandler(&htim2);
 }
 
 /**
@@ -149,4 +160,19 @@ void TIM8_UP_IRQHandler(void)
 void TIM8_CC_IRQHandler(void)
 {
   HAL_TIM_IRQHandler(&htim8);
+}
+/**
+* @brief This function handles TIM1 update interrupt.
+*/
+void TIM1_UP_IRQHandler(void)
+{
+  HAL_TIM_IRQHandler(&htim1);
+}
+
+/**
+* @brief This function handles TIM1 capture compare interrupt.
+*/
+void TIM1_CC_IRQHandler(void)
+{
+  HAL_TIM_IRQHandler(&htim1);
 }
