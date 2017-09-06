@@ -156,6 +156,7 @@
 #define BKP_VALUE 							0x55 
 #define FLASH32_BUFF_SIZE				256
 #define FLASH_CRC							((uint32_t)0x11223344)
+#define ENABLE_START_RESET
 #define START_TIMER_DELAY			1000
 typedef  void (*pFunction)(void);	
 

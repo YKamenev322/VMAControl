@@ -51,8 +51,9 @@
 #define TIMx_ADD_DRIVER_PSC			72 - 1			// 1 MHz
 #define TIMx_ADD_DRIVER_PERIOD  200 - 1			// 5000Hz
 	 
-#define ADD_PWM_MAX							190 - 1
+#define ADD_PWM_MAX							200 - 1
 #define ADD_PWM_MIN							0
+#define ADD_DEADTIME						255
 	 
 
 /* 

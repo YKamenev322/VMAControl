@@ -214,6 +214,7 @@ void testTask(void const * argument)
 				{
 					Error_Handler();
 				}
+				
 				break;
 			}
 			default:
@@ -238,6 +239,23 @@ void uartTimerCallback(xTimerHandle xTimer)
 				
 				case BTL_CMD_RESTART:
 						taskENTER_CRITICAL();
+//				
+//#if !defined(SEMENUK_DRIVER)
+//						HAL_TIM_PWM_Stop_IT(&htim8, TIM_CHANNEL_2);
+//						HAL_TIMEx_PWMN_Stop_IT(&htim8, TIM_CHANNEL_2);
+
+//						HAL_TIM_PWM_Stop_IT(&htim8, TIM_CHANNEL_3);
+//						HAL_TIMEx_PWMN_Stop_IT(&htim8, TIM_CHANNEL_3);
+//	
+//#else
+//						HAL_TIM_PWM_Stop_IT(&htim1, TIM_CHANNEL_2);
+//						HAL_TIMEx_PWMN_Stop_IT(&htim1, TIM_CHANNEL_2);
+
+//						HAL_TIM_PWM_Stop_IT(&htim1, TIM_CHANNEL_3);
+//						HAL_TIMEx_PWMN_Stop_IT(&htim1, TIM_CHANNEL_3);
+//#endif
+//						HAL_Delay(100);
+				
 						goToBootloader();
 						break;
 				case BTL_CMD_NO_CMD:

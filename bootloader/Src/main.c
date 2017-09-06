@@ -51,13 +51,19 @@ uint8_t startflag = 0;
 int main(void)
 {
 	bkp_enable();
-	
+
+#if defined(ENABLE_START_RESET)			
 	if (BKUPRead(RTC_BKP_DR2) == 0) {
 		startflag = 1;
 	}
 	else if (BKUPRead(RTC_BKP_DR1) == 0 && Flash_Check()) {
 		jump_to_app();
 	};
+#else	
+	if (BKUPRead(RTC_BKP_DR1) == 0 && Flash_Check()) {
+		jump_to_app();
+	};
+#endif	
 	
   HAL_Init();
 
@@ -78,13 +84,16 @@ int main(void)
   {
 		check_timer();
 		
+#if defined(ENABLE_START_RESET)		
 		if (startflag == 1) 
 			if (check_start_timer() == 1) {
 				__disable_irq();
 				BKUPWrite(RTC_BKP_DR2, BKP_VALUE);
+				//HAL_Delay(100);
 				HAL_NVIC_SystemReset();
 			}
-		
+#endif
+			
 		if (UartReady == SET)
 		{
 			UartReady = RESET;
@@ -192,10 +201,10 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(PORT_DIP3, &GPIO_InitStruct);
 	//DBG_PIN
-  GPIO_InitStruct.Pin = DBG;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
-  HAL_GPIO_Init(PORT_DBG, &GPIO_InitStruct);
+	GPIO_InitStruct.Pin = DBG;
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct.Pull = GPIO_PULLUP;
+	HAL_GPIO_Init(PORT_DBG, &GPIO_InitStruct);
 }
 void dbg_toggle()
 {

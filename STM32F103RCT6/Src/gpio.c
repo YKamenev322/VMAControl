@@ -205,10 +205,12 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 #endif
 
 #if defined(SEMENUK_DRIVER)	
+#if defined(ADD_ENABLE_FAULT)
   if (GPIO_Pin == FAULT)//add-dr
   {
 		DRIVER_PwmDisable(&Add);
   }	
+#endif
 #endif
 }
 

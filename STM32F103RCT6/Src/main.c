@@ -102,7 +102,8 @@ int main(void)
 	#endif
 	
 	DRIVER_Init(&Add, ADD);
-	DRIVER_Start(&Add);
+	DRIVER_Start(&Add); 
+	
 	//	Запускаю во freertos.c testTask
 //  if (HAL_ADCEx_Calibration_Start(&hadc1) != HAL_OK)
 //  {

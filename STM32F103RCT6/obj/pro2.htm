@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\obj\pro2.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\obj\pro2.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060300: Last Updated: Wed Jun 07 17:56:09 2017
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060300: Last Updated: Mon Jun 19 20:47:59 2017
 <BR><P>
 <H3>Maximum Stack Usage =        232 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -642,7 +642,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[af]"></a>tim_pwm_callback_add</STRONG> (Thumb, 30 bytes, Stack size 8 bytes, main.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 20<LI>Call Chain = tim_pwm_callback_add &rArr; DRIVER_SetPwm
+<BR><BR>[Stack]<UL><LI>Max Depth = 52<LI>Call Chain = tim_pwm_callback_add &rArr; DRIVER_SetPwm &rArr; HAL_TIMEx_PWMN_Start_IT &rArr; TIM_CCxNChannelCmd
 </UL>
 <BR>[Calls]<UL><LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DRIVER_SetPwmLow
 <LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DRIVER_SetPwm
@@ -651,7 +651,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[b2]"></a>tim_pwm_callback_vma</STRONG> (Thumb, 30 bytes, Stack size 8 bytes, main.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 20<LI>Call Chain = tim_pwm_callback_vma &rArr; DRIVER_SetPwm
+<BR><BR>[Stack]<UL><LI>Max Depth = 52<LI>Call Chain = tim_pwm_callback_vma &rArr; DRIVER_SetPwm &rArr; HAL_TIMEx_PWMN_Start_IT &rArr; TIM_CCxNChannelCmd
 </UL>
 <BR>[Calls]<UL><LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DRIVER_SetPwmLow
 <LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DRIVER_SetPwm
@@ -660,7 +660,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[b3]"></a>HAL_TIM_PWM_PulseFinishedCallback</STRONG> (Thumb, 170 bytes, Stack size 8 bytes, main.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 28<LI>Call Chain = HAL_TIM_PWM_PulseFinishedCallback &rArr; tim_pwm_callback_vma &rArr; DRIVER_SetPwm
+<BR><BR>[Stack]<UL><LI>Max Depth = 60<LI>Call Chain = HAL_TIM_PWM_PulseFinishedCallback &rArr; tim_pwm_callback_vma &rArr; DRIVER_SetPwm &rArr; HAL_TIMEx_PWMN_Start_IT &rArr; TIM_CCxNChannelCmd
 </UL>
 <BR>[Calls]<UL><LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tim_pwm_callback_vma
 <LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tim_pwm_callback_add
@@ -761,7 +761,7 @@ Global Symbols
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f103xe.o(RESET)
 </UL>
 <P><STRONG><a name="[2b]"></a>TIM4_IRQHandler</STRONG> (Thumb, 10 bytes, Stack size 8 bytes, stm32f1xx_it.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 44<LI>Call Chain = TIM4_IRQHandler &rArr; HAL_TIM_IRQHandler &rArr; HAL_TIM_PWM_PulseFinishedCallback &rArr; tim_pwm_callback_vma &rArr; DRIVER_SetPwm
+<BR><BR>[Stack]<UL><LI>Max Depth = 76<LI>Call Chain = TIM4_IRQHandler &rArr; HAL_TIM_IRQHandler &rArr; HAL_TIM_PWM_PulseFinishedCallback &rArr; tim_pwm_callback_vma &rArr; DRIVER_SetPwm &rArr; HAL_TIMEx_PWMN_Start_IT &rArr; TIM_CCxNChannelCmd
 </UL>
 <BR>[Calls]<UL><LI><a href="#[c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_IRQHandler
 </UL>
@@ -803,35 +803,35 @@ Global Symbols
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f103xe.o(RESET)
 </UL>
 <P><STRONG><a name="[29]"></a>TIM2_IRQHandler</STRONG> (Thumb, 10 bytes, Stack size 8 bytes, stm32f1xx_it.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 44<LI>Call Chain = TIM2_IRQHandler &rArr; HAL_TIM_IRQHandler &rArr; HAL_TIM_PWM_PulseFinishedCallback &rArr; tim_pwm_callback_vma &rArr; DRIVER_SetPwm
+<BR><BR>[Stack]<UL><LI>Max Depth = 76<LI>Call Chain = TIM2_IRQHandler &rArr; HAL_TIM_IRQHandler &rArr; HAL_TIM_PWM_PulseFinishedCallback &rArr; tim_pwm_callback_vma &rArr; DRIVER_SetPwm &rArr; HAL_TIMEx_PWMN_Start_IT &rArr; TIM_CCxNChannelCmd
 </UL>
 <BR>[Calls]<UL><LI><a href="#[c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_IRQHandler
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f103xe.o(RESET)
 </UL>
 <P><STRONG><a name="[39]"></a>TIM8_UP_IRQHandler</STRONG> (Thumb, 10 bytes, Stack size 8 bytes, stm32f1xx_it.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 44<LI>Call Chain = TIM8_UP_IRQHandler &rArr; HAL_TIM_IRQHandler &rArr; HAL_TIM_PWM_PulseFinishedCallback &rArr; tim_pwm_callback_vma &rArr; DRIVER_SetPwm
+<BR><BR>[Stack]<UL><LI>Max Depth = 76<LI>Call Chain = TIM8_UP_IRQHandler &rArr; HAL_TIM_IRQHandler &rArr; HAL_TIM_PWM_PulseFinishedCallback &rArr; tim_pwm_callback_vma &rArr; DRIVER_SetPwm &rArr; HAL_TIMEx_PWMN_Start_IT &rArr; TIM_CCxNChannelCmd
 </UL>
 <BR>[Calls]<UL><LI><a href="#[c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_IRQHandler
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f103xe.o(RESET)
 </UL>
 <P><STRONG><a name="[3b]"></a>TIM8_CC_IRQHandler</STRONG> (Thumb, 10 bytes, Stack size 8 bytes, stm32f1xx_it.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 44<LI>Call Chain = TIM8_CC_IRQHandler &rArr; HAL_TIM_IRQHandler &rArr; HAL_TIM_PWM_PulseFinishedCallback &rArr; tim_pwm_callback_vma &rArr; DRIVER_SetPwm
+<BR><BR>[Stack]<UL><LI>Max Depth = 76<LI>Call Chain = TIM8_CC_IRQHandler &rArr; HAL_TIM_IRQHandler &rArr; HAL_TIM_PWM_PulseFinishedCallback &rArr; tim_pwm_callback_vma &rArr; DRIVER_SetPwm &rArr; HAL_TIMEx_PWMN_Start_IT &rArr; TIM_CCxNChannelCmd
 </UL>
 <BR>[Calls]<UL><LI><a href="#[c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_IRQHandler
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f103xe.o(RESET)
 </UL>
 <P><STRONG><a name="[26]"></a>TIM1_UP_IRQHandler</STRONG> (Thumb, 10 bytes, Stack size 8 bytes, stm32f1xx_it.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 44<LI>Call Chain = TIM1_UP_IRQHandler &rArr; HAL_TIM_IRQHandler &rArr; HAL_TIM_PWM_PulseFinishedCallback &rArr; tim_pwm_callback_vma &rArr; DRIVER_SetPwm
+<BR><BR>[Stack]<UL><LI>Max Depth = 76<LI>Call Chain = TIM1_UP_IRQHandler &rArr; HAL_TIM_IRQHandler &rArr; HAL_TIM_PWM_PulseFinishedCallback &rArr; tim_pwm_callback_vma &rArr; DRIVER_SetPwm &rArr; HAL_TIMEx_PWMN_Start_IT &rArr; TIM_CCxNChannelCmd
 </UL>
 <BR>[Calls]<UL><LI><a href="#[c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_IRQHandler
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f103xe.o(RESET)
 </UL>
 <P><STRONG><a name="[28]"></a>TIM1_CC_IRQHandler</STRONG> (Thumb, 10 bytes, Stack size 8 bytes, stm32f1xx_it.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 44<LI>Call Chain = TIM1_CC_IRQHandler &rArr; HAL_TIM_IRQHandler &rArr; HAL_TIM_PWM_PulseFinishedCallback &rArr; tim_pwm_callback_vma &rArr; DRIVER_SetPwm
+<BR><BR>[Stack]<UL><LI>Max Depth = 76<LI>Call Chain = TIM1_CC_IRQHandler &rArr; HAL_TIM_IRQHandler &rArr; HAL_TIM_PWM_PulseFinishedCallback &rArr; tim_pwm_callback_vma &rArr; DRIVER_SetPwm &rArr; HAL_TIMEx_PWMN_Start_IT &rArr; TIM_CCxNChannelCmd
 </UL>
 <BR>[Calls]<UL><LI><a href="#[c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_IRQHandler
 </UL>
@@ -955,10 +955,11 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DRIVER_SetPwm
 </UL>
 
-<P><STRONG><a name="[b1]"></a>DRIVER_SetPwm</STRONG> (Thumb, 276 bytes, Stack size 12 bytes, vma.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 12<LI>Call Chain = DRIVER_SetPwm
+<P><STRONG><a name="[b1]"></a>DRIVER_SetPwm</STRONG> (Thumb, 354 bytes, Stack size 16 bytes, vma.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 44<LI>Call Chain = DRIVER_SetPwm &rArr; HAL_TIMEx_PWMN_Start_IT &rArr; TIM_CCxNChannelCmd
 </UL>
-<BR>[Calls]<UL><LI><a href="#[da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DRIVER_SetPwmNull
+<BR>[Calls]<UL><LI><a href="#[d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIMEx_PWMN_Start_IT
+<LI><a href="#[da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DRIVER_SetPwmNull
 </UL>
 <BR>[Called By]<UL><LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tim_pwm_callback_vma
 <LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tim_pwm_callback_add
@@ -2954,7 +2955,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[56]"></a>TIM_DMADelayPulseCplt</STRONG> (Thumb, 70 bytes, Stack size 16 bytes, stm32f1xx_hal_tim.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 44<LI>Call Chain = TIM_DMADelayPulseCplt &rArr; HAL_TIM_PWM_PulseFinishedCallback &rArr; tim_pwm_callback_vma &rArr; DRIVER_SetPwm
+<BR><BR>[Stack]<UL><LI>Max Depth = 76<LI>Call Chain = TIM_DMADelayPulseCplt &rArr; HAL_TIM_PWM_PulseFinishedCallback &rArr; tim_pwm_callback_vma &rArr; DRIVER_SetPwm &rArr; HAL_TIMEx_PWMN_Start_IT &rArr; TIM_CCxNChannelCmd
 </UL>
 <BR>[Calls]<UL><LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_PWM_PulseFinishedCallback
 </UL>
@@ -3158,7 +3159,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[c6]"></a>HAL_TIM_IRQHandler</STRONG> (Thumb, 406 bytes, Stack size 8 bytes, stm32f1xx_hal_tim.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 36<LI>Call Chain = HAL_TIM_IRQHandler &rArr; HAL_TIM_PWM_PulseFinishedCallback &rArr; tim_pwm_callback_vma &rArr; DRIVER_SetPwm
+<BR><BR>[Stack]<UL><LI>Max Depth = 68<LI>Call Chain = HAL_TIM_IRQHandler &rArr; HAL_TIM_PWM_PulseFinishedCallback &rArr; tim_pwm_callback_vma &rArr; DRIVER_SetPwm &rArr; HAL_TIMEx_PWMN_Start_IT &rArr; TIM_CCxNChannelCmd
 </UL>
 <BR>[Calls]<UL><LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_PWM_PulseFinishedCallback
 <LI><a href="#[ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_PeriodElapsedCallback
@@ -3360,6 +3361,7 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[210]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM_CCxNChannelCmd
 </UL>
 <BR>[Called By]<UL><LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DRIVER_Start
+<LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DRIVER_SetPwm
 </UL>
 
 <P><STRONG><a name="[218]"></a>HAL_TIMEx_PWMN_Stop_IT</STRONG> (Thumb, 198 bytes, Stack size 16 bytes, stm32f1xx_hal_tim_ex.o(.text), UNUSED)

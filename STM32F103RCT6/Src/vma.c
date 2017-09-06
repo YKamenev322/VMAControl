@@ -93,10 +93,10 @@ void DRIVER_Start(DRIVER* driver_handle)
 	
 #else
 	HAL_TIM_PWM_Start_IT(&htim1, TIM_CHANNEL_2);
-  HAL_TIMEx_PWMN_Start_IT(&htim1, TIM_CHANNEL_2);
+  //HAL_TIMEx_PWMN_Start_IT(&htim1, TIM_CHANNEL_2);
 
 	HAL_TIM_PWM_Start_IT(&htim1, TIM_CHANNEL_3);
-  HAL_TIMEx_PWMN_Start_IT(&htim1, TIM_CHANNEL_3);
+  //HAL_TIMEx_PWMN_Start_IT(&htim1, TIM_CHANNEL_3);
 #endif
 	}
 }
@@ -216,13 +216,28 @@ void DRIVER_SetPwm(DRIVER* driver_handle)
 		{
 				driver_handle->PWMDesire = ADD_PWM_MIN + setvalue;
 			
-				/*Start of regulation*/
-				if (abs(driver_handle->PWMDesire - driver_handle->PWMCurrent) > VMA_PWM_DELTA)
+//				/*Start of regulation*/
+//				if (abs(driver_handle->PWMDesire - driver_handle->PWMCurrent) > VMA_PWM_DELTA)
+//				{
+//					if (driver_handle->PWMDesire > driver_handle->PWMCurrent) 
+//						driver_handle->PWMCurrent = driver_handle->PWMCurrent + VMA_PWM_DELTA;
+//					else
+//						driver_handle->PWMCurrent = driver_handle->PWMCurrent - VMA_PWM_DELTA;
+//				}
+//				else
+//					driver_handle->PWMCurrent = driver_handle->PWMDesire;
+				static uint8_t localdelay = 0;
+				if (abs(driver_handle->PWMDesire - driver_handle->PWMCurrent) > 5)
 				{
-					if (driver_handle->PWMDesire > driver_handle->PWMCurrent) 
-						driver_handle->PWMCurrent = driver_handle->PWMCurrent + VMA_PWM_DELTA;
-					else
-						driver_handle->PWMCurrent = driver_handle->PWMCurrent - VMA_PWM_DELTA;
+					localdelay ++;
+					if (localdelay > 200) localdelay = 0;
+					if (localdelay % 200 == 0) 
+					{
+						if (driver_handle->PWMDesire > driver_handle->PWMCurrent) 
+							driver_handle->PWMCurrent = driver_handle->PWMCurrent + 5;
+						else
+							driver_handle->PWMCurrent = driver_handle->PWMCurrent - 5;
+					}
 				}
 				else
 					driver_handle->PWMCurrent = driver_handle->PWMDesire;
@@ -234,6 +249,21 @@ void DRIVER_SetPwm(DRIVER* driver_handle)
 			DRIVER_SetPwmNull(driver_handle);
 //			DRIVER_Stop(driver_handle);
 		}
+		static bool pwmNchannelStarted = false;
+		if ((driver_handle->PWMCurrent != ADD_PWM_MIN) & !pwmNchannelStarted)
+		{
+			HAL_TIMEx_PWMN_Start_IT(&htim1, TIM_CHANNEL_2);
+			HAL_TIMEx_PWMN_Start_IT(&htim1, TIM_CHANNEL_3);
+			pwmNchannelStarted = true;
+		}
+		/*
+		if ((driver_handle->PWMCurrent == ADD_PWM_MIN) & pwmNchannelStarted)
+		{
+			HAL_TIMEx_PWMN_Stop_IT(&htim1, TIM_CHANNEL_2);
+			HAL_TIMEx_PWMN_Stop_IT(&htim1, TIM_CHANNEL_3);
+			pwmNchannelStarted = false;
+		}
+		*/
 //#endif
 	}
 }
