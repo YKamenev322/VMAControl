@@ -11,6 +11,6 @@ Source code for 8 VMA-drivers
 2. Для 2 способа нужно изменить дефайны в main.h :
   `#define VMADRIVER_ESC30`
   `//#define DEBUG`
-А также зайти в options-Target-IROM1- выставить значение 0х8006400 (адрес, с которого будет стартовать основная программа)
-И собрать проект stm32f10rct6. 
-Далее воспользоваться программой stm32Flasher. ([WIKI](https://github.com/hidronautics/VMAControl/wiki/stm32Flasher-Usage))
+  А также зайти в options-Target-IROM1- выставить значение 0х8006400 (адрес, с которого будет стартовать основная программа)
+  И собрать проект stm32f10rct6. 
+  Далее воспользоваться программой stm32Flasher. ([WIKI](https://github.com/hidronautics/VMAControl/wiki/stm32Flasher-Usage))
