@@ -1,0 +1,4 @@
+c:/Electronics_projects/stm32_projects/stm32_motordrive/STM32F103RCT6/obj/pro2.hex
+1,2,3,4,5,6,7,8
+
+
